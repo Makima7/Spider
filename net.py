@@ -6,7 +6,10 @@ from keras.layers.core import Flatten
 from keras.layers.core import Dense
 from keras import backend as K
 
+#定义网络结构
 
+
+#LeNet
 class LeNet:
     @staticmethod
     def build(width, height, depth, classes):
