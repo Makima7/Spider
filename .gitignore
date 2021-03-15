@@ -127,3 +127,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+steam.model/saved_model.pb
+steam.model/variables.data-00000-of-00001
+steam.model/variables/variables.index
