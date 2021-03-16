@@ -130,3 +130,4 @@ dmypy.json
 steam.model/saved_model.pb
 steam.model/variables.data-00000-of-00001
 steam.model/variables/variables.index
+steam.model/variables/variables.data-00000-of-00001
