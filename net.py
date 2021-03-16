@@ -29,3 +29,10 @@ class LeNet:
         model.add(Activation("softmax"))
 
         return model
+
+#GoogleNet
+class GoogleNet:
+    @staticmethod
+    def build():
+        model=Sequential()
+        return model
