@@ -102,9 +102,9 @@ def saveImg(tasklist):
             downloadpath = './games/'+path+'/img'+str(num)+'.jpg'
             with open(downloadpath, 'wb') as f:
                 f.write(r.content)
-                time.sleep(3)
+                time.sleep(2)
             num = num+1
-        time.sleep(3)
+        time.sleep(2)
 
     print("所有任务执行完毕，请检查")
 
@@ -130,6 +130,7 @@ def askURL(url):
         print('HTTPError occured! error info:', e, ' please try again')
     except:
         print('unkown error occured,please try again')
+
     return r
 
 
