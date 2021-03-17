@@ -1,4 +1,4 @@
-from net import LeNet
+from net import LeNet, GoogleNet
 import sys
 import os
 import cv2
@@ -17,19 +17,19 @@ from sklearn import preprocessing
 matplotlib.use("Agg")
 
 # import the necessary packages
-sys.path.append('..') 
+sys.path.append('..')
 
-EPOCHS = 40
+EPOCHS = 200
 INIT_LR = 1e-3
 BS = 32
 CLASS_NUM = 33
-norm_size = 350
+norm_size = 128
 
 # 路径保存
-train_dataset_path="./train"
-test_dataset_path="./test"
-model_path="./model"
-plot_path="./plot"
+train_dataset_path = "./train"
+test_dataset_path = "./test"
+model_path = "./model"
+plot_path = "./plot"
 
 # def args_parse():
 #     ap = argparse.ArgumentParser()
@@ -44,17 +44,19 @@ plot_path="./plot"
 #     args = vars(ap.parse_args())
 #     return args
 
-#读取图片，转化为数据集、打标签
+# 读取图片，转化为数据集、打标签
+
+
 def load__data(path):
     print("loading images........")
     data = []
     labels = []
     imagePaths = sorted(list(paths.list_images(path)))
-    #对数据集随机排序
+    # 对数据集随机排序
     random.seed(42)
     random.shuffle(imagePaths)
 
-    #处理数据集 打标签
+    # 处理数据集 打标签
     for imagePath in imagePaths:
         image = cv2.imread(imagePath)
         image = cv2.resize(image, (norm_size, norm_size))
@@ -63,26 +65,29 @@ def load__data(path):
         label = imagePath.split(os.sep)[-2]
         labels.append(label)
 
-    #对汉字标签编码
+    # 对汉字标签编码
     data = np.array(data, dtype="float")/255.0
-    le=preprocessing.LabelEncoder()
-    le=le.fit(os.listdir("./train"))
-    labels=le.transform(labels)
+    le = preprocessing.LabelEncoder()
+    le = le.fit(os.listdir("./train"))
+    labels = le.transform(labels)
     labels = to_categorical(labels, num_classes=CLASS_NUM)
-    return data,labels
+    return data, labels
 
-#训练模型
+# 训练模型
+
+
 def train(aug, trainX, trainY, testX, testY):
-    #创建模型
+    # 创建模型
     print("compileing model\n---------------------")
-    model = LeNet.build(width=norm_size, height=norm_size,
-                        depth=3, classes=CLASS_NUM)
+    # model = LeNet.build(width=norm_size, height=norm_size,
+    #                      depth=3, classes=CLASS_NUM)
+    model = GoogleNet.build(width=norm_size, height=norm_size, depth=3, classes=CLASS_NUM)
 
     opt = Adam(lr=INIT_LR, decay=INIT_LR/EPOCHS)
     model.compile(loss="categorical_crossentropy",
-                    optimizer=opt, metrics=["accuracy"])
-    
-    #训练模型
+                  optimizer=opt, metrics=["accuracy"])
+
+    # 训练模型
     print("training network\n----------------------")
     H = model.fit(aug.flow(trainX, trainY, batch_size=BS), validation_data=(
         testX, testY), steps_per_epoch=len(trainX)//BS, epochs=EPOCHS, verbose=1)
@@ -90,7 +95,7 @@ def train(aug, trainX, trainY, testX, testY):
     print("serializing network\n---------------------")
     model.save("./steam.model")
 
-    #输出损失函数图
+    # 输出损失函数图
     plt.style.use("ggplot")
     plt.figure()
     N = EPOCHS
@@ -98,15 +103,11 @@ def train(aug, trainX, trainY, testX, testY):
     plt.plot(np.arange(0, N), H.history["val_loss"], label="val_loss")
     plt.plot(np.arange(0, N), H.history["accuracy"], label="acc")
     plt.plot(np.arange(0, N), H.history["val_accuracy"], label="val_acc")
-    plt.title("Training Loss and Accuracy on traffic-sign classifier")
+    plt.title("Training Loss and Accuracy on game classifier")
     plt.xlabel("EPOCH")
     plt.ylabel("LOSS / ACCURACY")
     plt.legend(loc="lower left")
     plt.savefig("./plot/learn.png")
-
-
-
-
 
 
 if __name__ == "__main__":
@@ -118,6 +119,6 @@ if __name__ == "__main__":
 
     aug = ImageDataGenerator(rotation_range=30, width_shift_range=0.1, height_shift_range=0.1,
                              shear_range=0.2, zoom_range=0.2, horizontal_flip=True, fill_mode="nearest")
-    
-    train(aug,trainX,trainY,testX,testY)
+
+    train(aug, trainX, trainY, testX, testY)
     print('resloved')

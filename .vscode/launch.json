@@ -12,7 +12,7 @@
             "console": "integratedTerminal",
             "args": [
                 "--model","steam.model",
-                "-i","predict/predict7.jpg"
+                "-i","predict/predict6.jpg"
             ]
         }
     ]

@@ -6,9 +6,10 @@ import argparse
 import imutils
 import cv2
 import os
+os.environ['CUDA_VISIBLE_DEVICES'] = '/gpu:0'
 
 
-norm_size = 350
+norm_size = 128
 
 
 def args_parse():
