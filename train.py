@@ -19,8 +19,8 @@ matplotlib.use("Agg")
 # import the necessary packages
 sys.path.append('..')
 
-EPOCHS = 200
-INIT_LR = 1e-3
+EPOCHS = 120
+INIT_LR = 1e-4
 BS = 32
 CLASS_NUM = 33
 norm_size = 128
