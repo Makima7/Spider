@@ -1,4 +1,4 @@
-from net import LeNet, GoogleNet
+from net import LeNet, GoogleNet, Inceptionv3
 import sys
 import os
 import cv2
@@ -19,9 +19,9 @@ matplotlib.use("Agg")
 # import the necessary packages
 sys.path.append('..')
 
-EPOCHS = 120
-INIT_LR = 1e-4
-BS = 32
+EPOCHS = 200
+INIT_LR = 0.0001
+BS = 16
 CLASS_NUM = 33
 norm_size = 128
 
@@ -79,11 +79,27 @@ def load__data(path):
 def train(aug, trainX, trainY, testX, testY):
     # 创建模型
     print("compileing model\n---------------------")
+
+    # 使用LeNet
     # model = LeNet.build(width=norm_size, height=norm_size,
     #                      depth=3, classes=CLASS_NUM)
-    model = GoogleNet.build(width=norm_size, height=norm_size, depth=3, classes=CLASS_NUM)
 
+    # 使用一个小型的googleNet
+    # model = GoogleNet.build(
+    #    width=norm_size, height=norm_size, depth=3, classes=CLASS_NUM)
+
+    # 使用keras内置的inceptionv3
+    model = Inceptionv3.build(
+        width=norm_size, height=norm_size, depth=3, classes=CLASS_NUM)
+
+    # 使用adam优化学习率
     opt = Adam(lr=INIT_LR, decay=INIT_LR/EPOCHS)
+
+    # 使用adadelta优化学习率
+    # from keras.optimizers import Adadelta
+    # opt = Adadelta(lr=1.0, rho=0.95, epsilon=None, decay=INIT_LR/EPOCHS)
+
+    # 添加损失函数
     model.compile(loss="categorical_crossentropy",
                   optimizer=opt, metrics=["accuracy"])
 
@@ -101,13 +117,22 @@ def train(aug, trainX, trainY, testX, testY):
     N = EPOCHS
     plt.plot(np.arange(0, N), H.history["loss"], label="train loss")
     plt.plot(np.arange(0, N), H.history["val_loss"], label="val_loss")
+    plt.title("Training Loss plot")
+    plt.xlabel("EPOCH")
+    plt.ylabel("LOSS")
+    plt.legend(loc="lower left")
+    plt.savefig("./plot/loss.png")
+
+    # 输出ACC图
+    plt.style.use("ggplot")
+    plt.figure()
     plt.plot(np.arange(0, N), H.history["accuracy"], label="acc")
     plt.plot(np.arange(0, N), H.history["val_accuracy"], label="val_acc")
-    plt.title("Training Loss and Accuracy on game classifier")
+    plt.title("Training Accuracy plot")
     plt.xlabel("EPOCH")
-    plt.ylabel("LOSS / ACCURACY")
+    plt.ylabel("ACCURACY")
     plt.legend(loc="lower left")
-    plt.savefig("./plot/learn.png")
+    plt.savefig("./plot/acc.png")
 
 
 if __name__ == "__main__":

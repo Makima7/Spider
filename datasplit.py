@@ -6,7 +6,7 @@ def main():
     pathlist = os.listdir("./games")
     for path in pathlist:
         imglist = os.listdir('./games/'+path)
-        if len(imglist) > 30:
+        if len(imglist) > 40:
             #随机化图片列表，并且去掉截图文件夹内最后的info文件
             random.seed(42)
             random.shuffle(imglist[0:-1])

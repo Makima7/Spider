@@ -1,14 +1,15 @@
 # --codeing=utf-8--
-from bs4 import BeautifulSoup
 import os
 import re
-import requests
-import urllib.request
-import urllib.error
-import xlrd
-import pandas
 import shutil
 import time
+import urllib.error
+import urllib.request
+
+import pandas
+import requests
+import xlrd
+from bs4 import BeautifulSoup
 
 """
     将表格中每个游戏名做好处理，在目录创建其对应文件夹，并记录信息
@@ -41,7 +42,8 @@ def createtask():
         # 根据链接判断该url指向一个游戏还是dlc
         if(re.findall(r'app/.*?/', infoURL) != []):
             id = re.findall(r'app/(.*?)/', infoURL)[0]
-            imgURL = r'https://steamcommunity.com/app/'+id+r'/screenshots/?p=1&browsefilter=mostrecent'
+            imgURL = r'https://steamcommunity.com/app/'+id + \
+                r'/screenshots/?p=1&browsefilter=mostrecent'
             # 生成一条带url和图片保存位置的task
             task = []
             task.append(imgURL)
@@ -97,7 +99,7 @@ def saveImg(tasklist):
         # 统计现有图片
         num = len(os.listdir('./games/'+path))-1
         for img in imgs:
-            #print(img['src'])
+            # print(img['src'])
             r = askURL(img['src'])
             downloadpath = './games/'+path+'/img'+str(num)+'.jpg'
             with open(downloadpath, 'wb') as f:

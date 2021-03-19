@@ -1,21 +1,17 @@
-from keras.models import Sequential
-from keras.layers.normalization import BatchNormalization
-from keras.layers.convolutional import Conv2D
-from keras.layers.convolutional import MaxPooling2D
-from keras.layers.convolutional import AveragePooling2D
-from keras.layers.core import Activation
-from keras.layers.core import Flatten
-from keras.layers.core import Dense
-from keras.layers.core import Dropout
-from keras.models import Model
-from keras.layers import Input
-from keras.layers import concatenate
 from keras import backend as K
+from keras.applications import InceptionV3
+from keras.layers import Input, concatenate,GlobalAveragePooling2D
+from keras.layers.convolutional import AveragePooling2D, Conv2D, MaxPooling2D
+from keras.layers.core import Activation, Dense, Dropout, Flatten
+from keras.layers.normalization import BatchNormalization
+from keras.models import Model, Sequential
 
 # 定义网络结构
-
+Network = InceptionV3
 
 # LeNet
+
+
 class LeNet:
     @staticmethod
     def build(width, height, depth, classes):
@@ -66,34 +62,48 @@ class GoogleNet:
     def build(width, height, depth, classes):
         inputShape = (height, width, depth)
         chanDim = -1
-        if K.image_data_format()=="channels_first":
-            inputShape=(depth,width,depth)
-            chanDim=-1
-        
-        inputs=Input(shape=inputShape)
+        if K.image_data_format() == "channels_first":
+            inputShape = (depth, width, depth)
+            chanDim = -1
 
-        x=GoogleNet.conv_module(inputs,96,3,3,(1,1),chanDim)
+        inputs = Input(shape=inputShape)
 
-        x=GoogleNet.inception_module(x,32,32,chanDim)
-        x=GoogleNet.inception_module(x,32,48,chanDim)
-        x=GoogleNet.downsample_module(x,80,chanDim)
+        x = GoogleNet.conv_module(inputs, 96, 3, 3, (1, 1), chanDim)
 
-        x=GoogleNet.inception_module(x,112,48,chanDim)
-        x=GoogleNet.inception_module(x,96,64,chanDim)
-        x=GoogleNet.inception_module(x,80,80,chanDim)
-        x=GoogleNet.inception_module(x,48,96,chanDim)
-        x=GoogleNet.downsample_module(x,96,chanDim)
+        x = GoogleNet.inception_module(x, 32, 32, chanDim)
+        x = GoogleNet.inception_module(x, 32, 48, chanDim)
+        x = GoogleNet.downsample_module(x, 80, chanDim)
 
-        x=GoogleNet.inception_module(x,176,160,chanDim)
-        x=GoogleNet.inception_module(x,176,160,chanDim)
-        x=AveragePooling2D((7,7))(x)
-        x=Dropout(0.5)(x)
+        x = GoogleNet.inception_module(x, 112, 48, chanDim)
+        x = GoogleNet.inception_module(x, 96, 64, chanDim)
+        x = GoogleNet.inception_module(x, 80, 80, chanDim)
+        x = GoogleNet.inception_module(x, 48, 96, chanDim)
+        x = GoogleNet.downsample_module(x, 96, chanDim)
 
-        x=Flatten()(x)
-        x=Dense(classes)(x)
-        x=Activation("softmax")(x)
+        x = GoogleNet.inception_module(x, 176, 160, chanDim)
+        x = GoogleNet.inception_module(x, 176, 160, chanDim)
+        x = AveragePooling2D((7, 7))(x)
+        x = Dropout(0.5)(x)
 
-        model=Model(inputs,x,name="googlenet")
+        x = Flatten()(x)
+        x = Dense(classes)(x)
+        x = Activation("softmax")(x)
 
-        
+        model = Model(inputs, x, name="googlenet")
+
+        return model
+
+
+class Inceptionv3:
+    @staticmethod
+    def build(width, height, depth, classes):
+        model = InceptionV3(include_top=False, input_shape=(
+            width, height, depth), classes=classes, weights=None)
+
+        x = model.output
+        x = GlobalAveragePooling2D(name='avg_pool')(x) 
+        x = Dense(1024,activation='relu')(x)
+        predictions = Dense(classes,activation='softmax')(x)
+        model = Model(inputs=model.input,outputs=predictions)
+
         return model

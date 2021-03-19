@@ -44,7 +44,7 @@ def predict(args):
     le = le.fit(os.listdir("./train"))
 
     label = str(le.inverse_transform(np.where(result == proba)[0]))
-    
+
     label = "{}:{:.2f}%".format(label, proba*100)
     print(label)
 
